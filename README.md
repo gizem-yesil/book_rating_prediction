@@ -79,6 +79,8 @@ Projede en iyi performans gösteren modelin API üzerinden kullanılabilir hale 
 -/predict endpointinde kullanıcıdan yorumlar alınarak LSTM modeli çalıştırıldı.
 -Gönderilen yorumun boş olmaması, belirtilen karakterlerden kısa veya uzun olmaması veya test sırasında yaşanabilecek hatalar gibi kontroller yapıldı. Global exception handler'lar kullanıldı.
 
+![Ekran görüntüsü 2025-02-16 141604](https://github.com/user-attachments/assets/3c98226f-5f60-4a85-8319-7216612c19a5)
+
 Veri Doğrulama & Hata Yönetimi:
 
 -Kullanıcıdan gelen yorumların boş olup olmadığı kontrol edildi.
