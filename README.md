@@ -33,7 +33,7 @@ Veri Kaydetme:
 
 -İşlenmiş veri, model eğitiminde kullanılmak üzere pickle formatında kaydedildi.
 
-# MODEL EĞİTİMİ :
+# 3.MODEL EĞİTİMİ :
 
 **LSTM:**
 
@@ -72,7 +72,7 @@ min_samples_leaf: (1,2,4)
 
 -En iyi eğitim accuracy'si 0.75, test accuracy'si 0.34 oldu ,overfitting gözlemlendi
 
-# FAST API ile API GELİŞTİRME :
+# 4.FAST API ile API GELİŞTİRME :
 
 Projede en iyi performans gösteren modelin API üzerinden kullanılabilir hale getirilmesi için FastAPI kullanıldı.
 
@@ -85,17 +85,17 @@ Veri Doğrulama & Hata Yönetimi:
 -Yorumun belirlenen karakter sınırları içinde olup olmadığı denetlendi.
 -Beklenmeyen hatalar için global exception handler kullanıldı.
 
-# OPENAPI SPESİFİKASYONU :
+# 5.OPENAPI SPESİFİKASYONU :
 
 -FastApi'nin otomatik oluşturduğu openapi.json verisi manuel düzenleme yapılmak üzere "yaml" formatına dönüştürüldü. 
 -Yaml formatı ile API'ye başlık, özet gibi bilgiler eklendi.
 
-# UNIT TESTLER :
+# 6.UNIT TESTLER :
 
 -API'nin doğru çalıştığını doğrulamak için pytest kullanılarak testler yazıldı.
 -Input formatları, hatalı girişlerde API'nin tepkisi ve model çıktıları test edildi.
 
-# DOCKER KULLANIMI :
+# 7.DOCKER KULLANIMI :
 
 -Dockerfile ile proje için bir Docker image oluşturuldu.
 -API ve model, bir Docker container'ı içinde çalıştırıldı.
