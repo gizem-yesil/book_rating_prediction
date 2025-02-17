@@ -1,7 +1,7 @@
 # **KİTAP PUAN TAHMİNİ API PROJESİ**
-Bu proje, bir kitap hakkındaki kullanıcı yorumlarına göre kitap puanları tahmini yapan makine öğrenmesi modeli ile bu modelin test edildiği bir API içermektedir. Proje ayrıca Docker kullanılarak paketlenmiştir.
+Bu proje, kullanıcı yorumlarına dayalı olarak kitapların puanlarını tahmin eden bir makine öğrenmesi modelini ve bu modelin test edildiği bir API'yi içermektedir. API, FastAPI kullanılarak geliştirilmiş ve Docker ile paketlenerek dağıtımı kolay hale getirilmiştir.
 
-# VERİ SETİ :
+# 1.VERİ SETİ :
 
 Veri seti json formatındadır. 9600 kayıttan oluşmaktadır. Eksik değer içermemektedir.Sütunlar:
 helpful : yorumun faydalı olması oranı (object)
@@ -10,50 +10,80 @@ reviewText : yorum yazısı (object)
 reviewTime : yorum tarihi (object)
 summary : yorumun özeti (object)
 
-# VERİ ÖN İŞLEME :
+# 2.VERİ ÖN İŞLEME :
 
-Öncelikle json formatındaki veri normalize edilerek bir dataframe haline getirildi. Veri tipleri, boş değer olup olmadığı ve rating dağılımları incelendi. Daha sonra nümerik değerlerin rating'e katkısını incelemek için korelasyon analizi yapıldı. Anlamlı değerlere ulaşılamayınca tamamen metin odaklı bir tahmin modeli kullanılmasına karar verildi.
+Veri Dönüştürme & Temizlik:
 
-- Kelimelere küçük harf dönüştürme, stopword'leri silme, noktalama işaretlerini silme gibi uygulamalar yapıldı.
--reviewText ile summary sütunları birleştirilerek "combined_text" sütunu elde edildi.
--Verinin son hali makine öğrenmesi modelinde kullanılmak üzere "pickle" formatında kaydedildi.
+-JSON formatındaki veri, normalize edilerek bir pandas dataframe'ine dönüştürüldü.
+-Veri tipleri incelendi, eksik değer olup olmadığı kontrol edildi.
+-Puan (rating) dağılımı analiz edildi.
+
+Korelasyon Analizi:
+
+-Sayısal sütunların rating ile ilişkisi incelendi. Anlamlı bir korelasyon bulunamadığı için tamamen metin odaklı bir model geliştirilmesine karar verildi.
+
+Metin Ön İşleme:
+
+-Tüm kelimeler küçük harfe dönüştürüldü.
+-Stopword'ler (önemsiz kelimeler) temizlendi.
+-Noktalama işaretleri kaldırıldı.
+-reviewText ve summary sütunları birleştirilerek "combined_text" sütunu oluşturuldu.
+
+Veri Kaydetme:
+
+-İşlenmiş veri, model eğitiminde kullanılmak üzere pickle formatında kaydedildi.
 
 # MODEL EĞİTİMİ :
 
 **LSTM:**
 
-Sıralı kelime ve duygu analizini iyi yapan yapısından dolayı kitap incelemesi konusunda iyi bir model olabileceği düşünüldü.
+Derin öğrenmede sıralı veriler ve duygu analizi konularında başarılı olduğu için LSTM (Long Short-Term Memory) modeli tercih edildi.
 
 -Veri seti %20 test , %80 eğitim verisi olarak ayrıldı. Eğitim verilerinin %10'u validasyon için kullanıldı.
--Daha sonra ilgili sütundan token'lar oluşturuldu.
--Padding işlemi için uygun uzunluğun belirlenmesi için yorum uzunluklarına bakıldı.
+-Kelimelerden token'lar oluşturuldu
+ -Uygun padding uzunluğu belirlendi.
 
 **Hiperparametre Optimizasyonu:**
  
 -Keras tuner kullanıldı.
--Model oluşturulurken; embedding_dim parametresi için 100-300 aralığı, lstm_units için 64-256 aralığı, dropout için 0.2-0.5 aralığı belirlendi.
+-Parametreler:
+ embedding_dim: 100-300 
+ lstm_units: 64-256 
+ dropout: 0.2-0.5 
+
 -En iyi validasyon accuracy'si 0.48 olarak bulundu.
 
 **RANDOM FOREST:**
 
-Daha basit bir ML modeli olarak RF modeli eğitilerek kıyaslama yapıldı.
--Veri seti %20 test , %80 eğitim verisi olarak ayrıldı. Eğitim verilerinin %10'u validasyon için kullanıldı.
+Daha basit bir makine öğrenmesi modeli olarak RF modeli eğitilerek kıyaslama yapıldı.
+
+-Veri seti %20 test , %80 eğitim verisi olarak ayrıldı.
 -Padding işlemi uygulandı.
--Kelimelerden vektörler oluşturuldu.
--Word2Vec modeli oluşturuldu.
+-Word2Vec modeli oluşturularak kelimeler vektörlere dönüştürüldü.
 
 **Hiperparametre Optimizasyonu:**
 
 -GridSearch kullanıldı.
--Model oluşturulurken; n_estimators parametresi için 100-500 aralığı, max_depth için 10-20 aralığı, min_samples_split için (2,5,10) aralığı, min_samples_leaf için (1,2,4) aralığı belirlendi.
+-Parametreler:
+n_estimators: 100-500 
+max_depth: 10-20 
+min_samples_split: (2,5,10) 
+min_samples_leaf: (1,2,4) 
+
 -En iyi eğitim accuracy'si 0.75, test accuracy'si 0.34 oldu ,overfitting gözlemlendi
 
-# FAST API :
+# FAST API ile API GELİŞTİRME :
 
-En iyi olarak belirlenen ml modeli kullanılmak üzere bir FastApi başlatıldı.
+Projede en iyi performans gösteren modelin API üzerinden kullanılabilir hale getirilmesi için FastAPI kullanıldı.
 
--predict endpointinde kullanıcıdan yorumlar alınarak LSTM modeli çalıştırıldı.
+-/predict endpointinde kullanıcıdan yorumlar alınarak LSTM modeli çalıştırıldı.
 -Gönderilen yorumun boş olmaması, belirtilen karakterlerden kısa veya uzun olmaması veya test sırasında yaşanabilecek hatalar gibi kontroller yapıldı. Global exception handler'lar kullanıldı.
+
+Veri Doğrulama & Hata Yönetimi:
+
+-Kullanıcıdan gelen yorumların boş olup olmadığı kontrol edildi.
+-Yorumun belirlenen karakter sınırları içinde olup olmadığı denetlendi.
+-Beklenmeyen hatalar için global exception handler kullanıldı.
 
 # OPENAPI SPESİFİKASYONU :
 
@@ -62,9 +92,12 @@ En iyi olarak belirlenen ml modeli kullanılmak üzere bir FastApi başlatıldı
 
 # UNIT TESTLER :
 
-- API'nin doğru çalışıp çalışmadığı, input formatı kontrolü gibi testler yapıldı.
+-API'nin doğru çalıştığını doğrulamak için pytest kullanılarak testler yazıldı.
+-Input formatları, hatalı girişlerde API'nin tepkisi ve model çıktıları test edildi.
 
 # DOCKER KULLANIMI :
 
--Dockerfile ile bir Docker image'i , bundan da bir container oluşturuldu ve proje bununla çalıştırıldı.
+-Dockerfile ile proje için bir Docker image oluşturuldu.
+-API ve model, bir Docker container'ı içinde çalıştırıldı.
+
 
