@@ -101,5 +101,6 @@ Veri Doğrulama & Hata Yönetimi:
 
 -Dockerfile ile proje için bir Docker image oluşturuldu.
 -API ve model, bir Docker container'ı içinde çalıştırıldı.
+![image](https://github.com/user-attachments/assets/33cdba9a-8938-45f3-89f3-bf59a9d861ee)
 
 
